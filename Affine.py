@@ -1,24 +1,37 @@
 import galois_field as gf
-from galois_field import GFpn
 import Converter
 import TextManager as tm
 
 def AffineEncodeBlock(block: gf.ElementInGFpn,
-                      keyA: gf.ElementInGFpn, kebB: gf.ElementInGFpn) -> str:
-    y = keyA * block + kebB
+                      keyA: gf.ElementInGFpn, keyB: gf.ElementInGFpn,
+                      decode: bool) -> str:
+    if decode:
+        y = (block - keyB) * keyA
+    else:
+        y = keyA * block + keyB
     return y
 
-def AffineEncode(field: gf.GFpn, message: str, keyA: gf.ElementInGFpn, kebB: gf.ElementInGFpn):
+def AffineEncode(field: gf.GFpn, message: str,
+                 keyA: gf.ElementInGFpn, keyB: gf.ElementInGFpn,
+                 decode: bool = False) -> str:
     binMsg = tm.string_to_binary(message)
-    binMsg += '0' * len(binMsg) % field.p
-    blockLen = field.p
+    blockLen = field.mod_poly.order
+    binMsg += '0' * (len(binMsg) % blockLen)
     blockNum = len(binMsg) // blockLen
 
-    res = ''
+    binRes = ''
     for i in range(blockNum):
         block = binMsg[i * blockLen : (i + 1) * blockLen]
-        blockInGfpn = Converter.BinaryIntoElementInGFpn(blockInGfpn, GFpn)
-        encodedBlock = AffineEncodeBlock(block, keyA, kebB)
-        res += Converter.ElementInGFpnIntoBinary(encodedBlock)
+        blockInGfpn = Converter.BinaryIntoElementInGFpn(block, field)
+        encodedBlock = AffineEncodeBlock(blockInGfpn, keyA, keyB, decode)
+        encodedBinary = Converter.ElementInGFpnIntoBinary(encodedBlock)
+        binRes += encodedBinary
 
+    res = tm.binary_to_string(binRes)
     return res
+
+def AffineDecode(field: gf.GFpn, message: str,
+                 keyA: gf.ElementInGFpn, keyB: gf.ElementInGFpn) -> str:
+    invKeyA = keyA.inverse()
+
+    return AffineEncode(field, message, invKeyA, keyB, True)
