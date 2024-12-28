@@ -1,8 +1,7 @@
 import pytest
 import galois_field as gf
 from Affine import *
-import Converter
-import TextManager as tm
+from Fields import *
 
 @pytest.mark.parametrize(
     "block_coeffs, keyA_coeffs, keyB_coeffs, p, mod_coeffs, decode, expected_coeffs",
@@ -25,7 +24,6 @@ def test_affine_encode_block(block_coeffs, keyA_coeffs, keyB_coeffs, p, mod_coef
     invKeyA = keyA.inverse()
     keyB = field.elm(keyB_coeffs)
 
-
     # Преобразование
     result = AffineEncodeBlock(block, keyA, keyB, decode)
 
@@ -35,17 +33,48 @@ def test_affine_encode_block(block_coeffs, keyA_coeffs, keyB_coeffs, p, mod_coef
     assert block.coeffs == decodedResult.coeffs
 
 @pytest.mark.parametrize(
-    "message, keyA_coeffs, keyB_coeffs, p, mod_coeffs",
+    "block_coeffs, keyA_coeffs, keyB_coeffs, p, n",
     [
-        ("test message", [1, 0], [0, 1], 5, [1, 0, 2, 1]),  # Простое поле GF(5^3)
-        ("hello world", [1, 2], [2, 3], 7, [1, 0, 3]),      # Поле GF(7^3)
-        ("123456", [1], [2], 3, [1, 1]),                   # Поле GF(3^2)
-        ("", [1, 1], [0, 1], 5, [1, 0, 2]),                # Пустая строка
+        # Пример 1: Кодирование
+        ([3, 1], [0, 2], [1, 1], 5, 7),
+        # Пример 3: Кодирование с другими значениями
+        ([2, 3, 4], [1, 1], [0, 1, 1], 7, 13)
     ]
 )
-def test_affine_encode_decode(message, keyA_coeffs, keyB_coeffs, p, mod_coeffs):
+def test_affine_encode_block(block_coeffs, keyA_coeffs, keyB_coeffs, p, n):
     # Настройка поля GF(p^n)
-    field = gf.GFpn(p, mod_coeffs)
+    field = CreateGFpn(p, n)
+
+    assert field.is_valid
+
+    # Создание элементов поля
+    block = field.elm(block_coeffs)
+    keyA = field.elm(keyA_coeffs)
+    invKeyA = keyA.inverse()
+    keyB = field.elm(keyB_coeffs)
+
+    #assert ElementIsInversible(keyA)
+
+    # Преобразование
+    result = AffineEncodeBlock(block, keyA, keyB, False)
+
+    decodedResult = AffineEncodeBlock(result, invKeyA, keyB, True)
+
+    # Проверка
+    assert block.coeffs == decodedResult.coeffs
+
+@pytest.mark.parametrize(
+    "message, keyA_coeffs, keyB_coeffs, p, n",
+    [
+        ("test message", [1, 0], [0, 1], 5, 3),  # Простое поле GF(5^3)
+        ("hello world", [1, 2], [2, 3], 7, 11),      # Поле GF(7^3)
+        ("123456", [1], [2], 3, 2),                   # Поле GF(3^2)
+        ("", [1, 1], [0, 1], 5, 8),                # Пустая строка
+    ]
+)
+def test_affine_encode_decode(message, keyA_coeffs, keyB_coeffs, p, n):
+    # Настройка поля GF(p^n)
+    field = CreateGFpn(p, n)
 
     # Создание ключей
     keyA = field.elm(keyA_coeffs)
