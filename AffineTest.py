@@ -8,7 +8,7 @@ import TextManager as tm
     "block_coeffs, keyA_coeffs, keyB_coeffs, p, mod_coeffs, decode, expected_coeffs",
     [
         # Пример 1: Кодирование
-        ([3, 1], [2, 0], [1, 1], 5, [1, 0, 0, 2], False, [4, 3]),
+        ([3, 1], [2, 0], [1, 1], 5, [1, 0, 2, 1], False, [4, 3]),
         # Пример 3: Кодирование с другими значениями
         ([2, 3, 4], [1, 1], [0, 1, 1], 7, [1, 0, 3], False, [3, 4, 6])
     ]
@@ -22,22 +22,22 @@ def test_affine_encode_block(block_coeffs, keyA_coeffs, keyB_coeffs, p, mod_coef
     # Создание элементов поля
     block = field.elm(block_coeffs)
     keyA = field.elm(keyA_coeffs)
+    invKeyA = keyA.inverse()
     keyB = field.elm(keyB_coeffs)
 
-    z = keyA * keyA.inverse()
 
     # Преобразование
     result = AffineEncodeBlock(block, keyA, keyB, decode)
 
-    decodedResult = AffineEncodeBlock(result, keyA, keyB, not decode)
+    decodedResult = AffineEncodeBlock(result, invKeyA, keyB, not decode)
 
     # Проверка
-    assert result.coeffs == decodedResult.coeffs
+    assert block.coeffs == decodedResult.coeffs
 
 @pytest.mark.parametrize(
     "message, keyA_coeffs, keyB_coeffs, p, mod_coeffs",
     [
-        ("test message", [1, 0], [0, 1], 5, [1, 0, 0, 2]),  # Простое поле GF(5^3)
+        ("test message", [1, 0], [0, 1], 5, [1, 0, 2, 1]),  # Простое поле GF(5^3)
         ("hello world", [1, 2], [2, 3], 7, [1, 0, 3]),      # Поле GF(7^3)
         ("123456", [1], [2], 3, [1, 1]),                   # Поле GF(3^2)
         ("", [1, 1], [0, 1], 5, [1, 0, 2]),                # Пустая строка

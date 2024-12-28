@@ -7,7 +7,7 @@ def AffineEncodeBlock(block: gf.ElementInGFpn,
                       keyA: gf.ElementInGFpn, keyB: gf.ElementInGFpn,
                       decode: bool) -> gf.ElementInGFpn:
     if decode:
-        y = (block - keyB) * keyA.inverse()
+        y = (block - keyB) * keyA # KeyA passed into the arguments should already be inversed (for performance)
     else:
         y = keyA * block + keyB
     return y
