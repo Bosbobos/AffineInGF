@@ -70,6 +70,7 @@ def test_affine_encode_block(block_coeffs, keyA_coeffs, keyB_coeffs, p, n):
         ("hello world", [1, 2], [2, 3], 7, 11),      # Поле GF(7^3)
         ("123456", [1], [2], 3, 2),                   # Поле GF(3^2)
         ("", [1, 1], [0, 1], 5, 8),                # Пустая строка
+        ("i love cryptography <3", [15, 1, 0, 7, 8], [4, 6, 7, 0, 1], 17, 10),
     ]
 )
 def test_affine_encode_decode(message, keyA_coeffs, keyB_coeffs, p, n):

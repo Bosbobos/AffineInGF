@@ -28,6 +28,8 @@ def CreateGFpn(p, n = None, mod_poly = None):
         if n is None: raise ValueError('Either n or mod_poly must be specified')
         if len(conway) == 0:
             ReadConwayFromFile()
+        if len(conway[p][n]) == 0:
+            raise ValueError(f'No Conway for the given p ({p}) and n ({n}). Please create a polinomial of your own or choose other values')
         mod_poly = conway[p][n]
 
     return gf.GFpn(p, mod_poly)
