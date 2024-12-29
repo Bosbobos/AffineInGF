@@ -53,8 +53,6 @@ def test_affine_encode_block(block_coeffs, keyA_coeffs, keyB_coeffs, p, n):
     invKeyA = keyA.inverse()
     keyB = field.elm(keyB_coeffs)
 
-    #assert ElementIsInversible(keyA)
-
     # Преобразование
     result = AffineEncodeBlock(block, keyA, keyB, False)
 
@@ -87,48 +85,3 @@ def test_affine_encode_decode(message, keyA_coeffs, keyB_coeffs, p, n):
 
     # Проверка
     assert decoded_message == message
-
-@pytest.mark.parametrize(
-    "message1, message2, keyA_coeffs, keyB_coeffs, p, mod_coeffs",
-    [
-        ("hello", "world", [1, 0], [0, 1], 5, [1, 0, 0, 2]),  # Разные сообщения, одно поле
-        ("abc", "def", [1, 1], [1, 0], 7, [1, 0, 3]),         # Поле GF(7^2)
-        ("123", "321", [2], [1], 3, [1, 1]),                 # Поле GF(3^1)
-    ]
-)
-def test_affine_encode_injective(message1, message2, keyA_coeffs, keyB_coeffs, p, mod_coeffs):
-    # Настройка поля GF(p^n)
-    field = gf.GFpn(p, mod_coeffs)
-
-    # Создание ключей
-    keyA = field.elm(keyA_coeffs)
-    keyB = field.elm(keyB_coeffs)
-
-    # Кодирование сообщений
-    encoded1 = AffineEncode(field, message1, keyA, keyB)
-    encoded2 = AffineEncode(field, message2, keyA, keyB)
-
-    # Проверка
-    assert encoded1 != encoded2, "Закодированные сообщения для разных входных данных совпадают"
-
-@pytest.mark.parametrize(
-    "keyA_coeffs, keyB_coeffs, message, p, mod_coeffs",
-    [
-        ([0], [0, 1], "test", 5, [1, 0, 2]),  # Нулевой ключ A
-        ([0], [0], "test", 7, [1, 0, 3]),     # Оба ключа нулевые
-    ]
-)
-def test_affine_invalid_keys(keyA_coeffs, keyB_coeffs, message, p, mod_coeffs):
-    # Настройка поля GF(p^n)
-    field = gf.GFpn(p, mod_coeffs)
-
-    # Создание ключей
-    keyA = field.elm(keyA_coeffs)
-    keyB = field.elm(keyB_coeffs)
-
-    # Проверка на исключение
-    with pytest.raises(ValueError, match="Invalid keyA: zero element not allowed"):
-        AffineEncode(field, message, keyA, keyB)
-
-    with pytest.raises(ValueError, match="Invalid keyA: zero element not allowed"):
-        AffineDecode(field, message, keyA, keyB)

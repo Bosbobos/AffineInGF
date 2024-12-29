@@ -15,7 +15,7 @@ def ReadConwayFromFile():
             if line.endswith(","):
                 line = line[:-1]
 
-            # Извлекаем данные с помощью регулярного выражения
+            # Regular expression to extract data
             match = re.match(r"\[(\d+),(\d+),\[(.*?)\]\]", line)
             if match:
                 p = int(match.group(1))
@@ -33,7 +33,3 @@ def CreateGFpn(p, n = None, mod_poly = None):
         mod_poly = conway[p][n]
 
     return gf.GFpn(p, mod_poly)
-
-def ElementIsInversible(elem: gf.ElementInGFpn):
-    prod = elem * elem.inverse()
-    return prod.coeffs == [1]

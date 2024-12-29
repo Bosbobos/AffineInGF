@@ -18,9 +18,10 @@ def AffineEncode(field: gf.GFpn, message: str,
     blockLen = int(ceil(log2(field.p ** field.mod_poly.order + 1))) # Цель - подобрать величину блока такую, чтобы в неё поместилось максимальное число, которое можно записать в GFpn
     if not decode: binMsg = tm.string_to_binary(message + ' ' * 10)
     else: binMsg = tm.string_to_binary(message)
-    #binMsg += '0' * (len(binMsg) % blockLen)
+
     blockNum = int(ceil(len(binMsg) / blockLen))
 
+    if decode: keyA = keyA.inverse()
     binRes = ''
     for i in range(blockNum):
         if i == blockNum - 1:
@@ -37,6 +38,5 @@ def AffineEncode(field: gf.GFpn, message: str,
 
 def AffineDecode(field: gf.GFpn, message: str,
                  keyA: gf.ElementInGFpn, keyB: gf.ElementInGFpn) -> str:
-    invKeyA = keyA.inverse()
 
-    return AffineEncode(field, message, invKeyA, keyB, True)
+    return AffineEncode(field, message, keyA, keyB, True)
