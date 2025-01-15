@@ -1,5 +1,3 @@
-from symbol import return_stmt
-
 import Affine as aff
 import Fields
 import galois_field as gf

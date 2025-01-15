@@ -70,7 +70,7 @@ def test_affine_encode_block(block_coeffs, keyA_coeffs, keyB_coeffs, p, n):
         ("123456", [1], [2], 3, 2),                   # Поле GF(3^2)
         ("", [1, 1], [0, 1], 5, 8),                # Пустая строка
         ("i love cryptography <3", [15, 1, 0, 7, 8], [4, 6, 7, 0, 1], 17, 10),
-        ("111111111111111111111111111111111111111111111111111111111111111111111111111111111111111", [1], [0], 11, 15) # ?????????????????????????? TODO: find out why fails
+        ("111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111", [1], [0], 11, 15)
     ]
 )
 def test_affine_encode_decode(message, keyA_coeffs, keyB_coeffs, p, n):
@@ -87,3 +87,35 @@ def test_affine_encode_decode(message, keyA_coeffs, keyB_coeffs, p, n):
 
     # Проверка
     assert decoded_message == message
+
+@pytest.mark.parametrize(
+    "message",
+    [
+        ("test message"),
+        ("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"),
+        ("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"),
+        "1111111111111111111111111111",
+        "111111111111",
+        "111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111"
+    ]
+)
+def test_converter(message):
+    binRes = ''
+    field = CreateGFpn(p=7, n=11)
+    binMsg = tm.string_to_binary(message + '00000')
+
+    blockLen = int(ceil(log2(field.p ** field.mod_poly.order + 1)))
+    blockNum = int(ceil(len(binMsg) / blockLen))
+
+    for i in range(blockNum):
+        if i == blockNum - 1:
+            block = binMsg[i * blockLen:].ljust(blockLen, '0')
+        else:
+            block = binMsg[i * blockLen : (i + 1) * blockLen]
+        blockInGfpn = Converter.BinaryIntoElementInGFpn(block, field)
+        encodedBinary = Converter.ElementInGFpnIntoBinary(blockInGfpn).rjust(blockLen, '0')
+        binRes += encodedBinary
+
+    res = tm.binary_to_string(binRes)
+
+    assert res[:len(message)] == message

@@ -15,7 +15,8 @@ def AffineEncodeBlock(block: gf.ElementInGFpn,
 def AffineEncode(field: gf.GFpn, message: str,
                  keyA: gf.ElementInGFpn, keyB: gf.ElementInGFpn,
                  decode: bool = False) -> str:
-    blockLen = int(ceil(log2(field.p ** field.mod_poly.order + 1))) # Цель - подобрать величину блока такую, чтобы в неё поместилось максимальное число, которое можно записать в GFpn
+    maxNum = field.p ** field.mod_poly.order
+    blockLen = int(ceil(log2(float(maxNum) + 1))) # Цель - подобрать величину блока такую, чтобы в неё поместилось максимальное число, которое можно записать в GFpn
     if not decode: message += ' ' * 10
     binMsg = tm.string_to_binary(message)
 
@@ -25,12 +26,12 @@ def AffineEncode(field: gf.GFpn, message: str,
     binRes = ''
     for i in range(blockNum):
         if i == blockNum - 1:
-            block = binMsg[i * blockLen:].rjust(blockLen, '0')
+            block = binMsg[i * blockLen:].ljust(blockLen, '0')
         else:
             block = binMsg[i * blockLen : (i + 1) * blockLen]
         blockInGfpn = Converter.BinaryIntoElementInGFpn(block, field)
         encodedBlock = AffineEncodeBlock(blockInGfpn, keyA, keyB, decode)
-        encodedBinary = Converter.ElementInGFpnIntoBinary(encodedBlock).zfill(blockLen)
+        encodedBinary = Converter.ElementInGFpnIntoBinary(encodedBlock).rjust(blockLen, '0')
         binRes += encodedBinary
 
     res = tm.binary_to_string(binRes)
