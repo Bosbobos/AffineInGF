@@ -13,8 +13,9 @@ def BinaryIntoElementInGFpn(bin: str, GFpn: gf.GFpn) -> gf.ElementInGFpn:
 
 def ElementInGFpnIntoBinary(elem: gf.ElementInGFpn) -> str:
     res = 0
-    coeffs = elem.coeffs
-    for i in range(len(coeffs)):
-        res += coeffs[i] * elem.p**(len(coeffs) - i - 1)
+    n = elem.mod_poly.order
+    coeffs = [0]*(n - len(elem.coeffs)) + elem.coeffs
+    for i in range(n):
+        res += coeffs[i] * elem.p**(n - i - 1)
 
     return bin(res)[2:]
