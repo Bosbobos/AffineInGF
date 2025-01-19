@@ -1,7 +1,7 @@
 import galois_field as gf
 import Converter
 import TextManager as tm
-from numpy import log2, ceil, floor
+from math import log, ceil
 
 def AffineEncodeBlock(block: gf.ElementInGFpn,
                       keyA: gf.ElementInGFpn, keyB: gf.ElementInGFpn,
@@ -15,30 +15,30 @@ def AffineEncodeBlock(block: gf.ElementInGFpn,
 def AffineEncode(field: gf.GFpn, message: str,
                  keyA: gf.ElementInGFpn, keyB: gf.ElementInGFpn,
                  decode: bool = False) -> str:
-    print(decode)
-    maxNum = field.p ** field.mod_poly.order
-    blockLen = int(ceil(log2(float(maxNum) + 1))) # Цель - подобрать величину блока такую, чтобы в неё поместилось максимальное число, которое можно записать в GFpn
+    #print(decode)
+    p = field.p
+    n = field.mod_poly.order * len(str(field.p))
     if not decode: message += ' ' * 10
-    binMsg = tm.string_to_binary(message)
-    print(binMsg)
+    pMsg = tm.string_to_base_p(message, p)
+    #print(pMsg)
 
-    blockNum = int(ceil(len(binMsg) / blockLen))
+    blockNum = int(ceil(len(pMsg) / n))
 
     if decode: keyA = keyA.inverse()
-    binRes = ''
+    pRes = ''
     for i in range(blockNum):
         if i == blockNum - 1:
-            block = binMsg[i * blockLen:].ljust(blockLen, '0')
+            block = pMsg[i * n:].ljust(n, '0')
         else:
-            block = binMsg[i * blockLen : (i + 1) * blockLen]
-        blockInGfpn = Converter.BinaryIntoElementInGFpn(block, field)
+            block = pMsg[i * n : (i + 1) * n]
+        blockInGfpn = Converter.BasePIntoElementInGFPn(block, field)
         encodedBlock = AffineEncodeBlock(blockInGfpn, keyA, keyB, decode)
-        encodedBinary = Converter.ElementInGFpnIntoBinary(encodedBlock).rjust(blockLen, '0')
-        print(block, blockInGfpn, '|', encodedBlock, encodedBinary)
-        binRes += encodedBinary
+        encodedBaseP = Converter.ElementInGFPnIntoBaseP(encodedBlock).rjust(n, '0')
+        #print(block, blockInGfpn, '|', encodedBlock, encodedBaseP)
+        pRes += encodedBaseP
 
-    res = tm.binary_to_string(binRes)
-    print(binRes)
+    res = tm.base_p_to_string(pRes, p)
+    #print(pRes)
     return res.split(' '*3)[0]
 
 def AffineDecode(field: gf.GFpn, message: str,

@@ -19,3 +19,19 @@ def ElementInGFpnIntoBinary(elem: gf.ElementInGFpn) -> str:
         res += coeffs[i] * elem.p**(n - i - 1)
 
     return bin(res)[2:]
+
+def BasePIntoElementInGFPn(baseP: str, GFpn: gf.GFpn) -> gf.ElementInGFpn:
+    coeffs = []
+    p = GFpn.p
+    for i in range(0, len(baseP), len(str(p))):
+        x = int(baseP[i : i + len(str(p))])
+        coeffs.append(x)
+
+    return gf.ElementInGFpn(coeffs, p, GFpn.mod_poly)
+
+def ElementInGFPnIntoBaseP(elem: gf.ElementInGFpn) -> str:
+    res = ''
+    for x in elem.coeffs:
+        res += str(x).rjust(len(str(elem.p)), '0')
+
+    return res
