@@ -1,24 +1,21 @@
 import galois_field as gf
+from math import log, ceil
 import numpy as np
 
-def BinaryIntoElementInGFpn(bin: str, GFpn: gf.GFpn) -> gf.ElementInGFpn:
-    coeffs = []
-    num = int(bin, 2)
-    p = GFpn.p
-    while num:
-        coeffs.append(num % p)
-        num //= p
-
-    return gf.ElementInGFpn(coeffs[::-1], p, GFpn.mod_poly)
-
-def ElementInGFpnIntoBinary(elem: gf.ElementInGFpn) -> str:
+def ToDecimal(coeffs, base) -> int:
     res = 0
-    n = elem.mod_poly.order
-    coeffs = [0]*(n - len(elem.coeffs)) + elem.coeffs
-    for i in range(n):
-        res += coeffs[i] * elem.p**(n - i - 1)
+    for i in range(len(coeffs)):
+        res += coeffs[i] * base ** (len(coeffs) - i - 1)
 
-    return bin(res)[2:]
+    return res
+
+def ToBaseP(num, base) -> [int]:
+    coeffs = []
+    while num:
+        coeffs.append(num % base)
+        num //= base
+
+    return coeffs[::-1]
 
 def BasePIntoElementInGFPn(baseP: str, GFpn: gf.GFpn) -> gf.ElementInGFpn:
     coeffs = []
@@ -35,3 +32,49 @@ def ElementInGFPnIntoBaseP(elem: gf.ElementInGFpn) -> str:
         res += str(x).rjust(len(str(elem.p)), '0')
 
     return res
+
+def StringIntoBaseP(text: str, field: gf.GFpn) -> str:
+    res = ''
+    p = field.p
+    block_len = len(str(p)) * field.mod_poly.order
+
+    for symbol in text:
+        sym_res = ''
+        x = ord(symbol)
+        while x:
+            sym_res += str(x % p).rjust(len(str(p)), '0')
+            x //= p
+
+        sym_res = sym_res[::-1]
+        res += sym_res.rjust(block_len, '0')
+
+    return res
+
+def BasePIntoString(encoded_text: str, field: gf.GFpn) -> str:
+    res = ''
+    p = field.p
+    block_len = len(str(p)) * field.mod_poly.order
+    for i in range(0, len(encoded_text), block_len):
+        sym_res = 0
+        block = encoded_text[i:i + block_len].rjust(block_len, '0')
+        for j in range(0, block_len, len(str(p))):
+            x = int(block[j: j + len(str(p))])
+            sym_res += x * p ** (block_len // len(str(p)) - j - 1)
+
+        res += chr(int(sym_res))
+
+    return res
+
+def ElementInGFPnIntoHex(elem: gf.ElementInGFpn) -> str:
+    max_val = elem.p ** elem.mod_poly.order
+    digit_len = ceil(log(max_val, 16))
+    dec = ToDecimal(elem.coeffs, elem.p)
+    hexa = ToBaseP(dec, 16)
+    return ''.join([x.rjust(digit_len) for x in hexa])
+
+def HexIntoElementInGFPn(hexa: str, field: gf.GFpn) -> gf.ElementInGFpn:
+    coeffs = []
+    max_field_val = field.p ** field.mod_poly.order
+    digit_len = ceil(log(max_field_val, 16))
+    for i in range(0, len(hexa), digit_len):
+        block = int(hexa[i : i + digit_len])

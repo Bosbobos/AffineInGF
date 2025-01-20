@@ -36,6 +36,8 @@ def check_p_and_ns(p, n_values):
             key_combinations = itertools.product(range(p), repeat=n)
 
             for keyA_coeffs in key_combinations:
+                if keyA_coeffs == [0]*n:
+                    continue
                 for keyB_coeffs in key_combinations:
                     # Создание ключей
                     keyA = field.elm(keyA_coeffs)
@@ -65,7 +67,8 @@ remembered.'''
 
                     # Проверка
                     if decoded_message != message:
-                        raise ValueError(f"Decoded message does not match original for p={p}, n={n}.")
+                        raise ValueError(f"Decoded message does not match original for p={p}, n={n}."
+                                         f"Failed KeyA: {keyA}, KeyB: {keyB}")
         except Exception as e:
             return f"Failed for p={p}, n={n}. Exception: {e}"
     return f"All provided n values work for p={p}."

@@ -1,1 +1,3 @@
 galois-field @ git+https://github.com/syakoo/galois-field
+numpy==1.19.3
+nptyping==1.3.0
