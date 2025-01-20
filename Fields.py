@@ -6,7 +6,7 @@ conway = defaultdict(lambda: defaultdict(list))
 
 def ReadConwayFromFile():
     global conway
-    with open('ConwayPolinomials.txt', 'r') as file:
+    with open('ConwayPolynomials.txt', 'r') as file:
         for line in file:
             line = line.strip()
             if not line or line == "0;":
@@ -29,7 +29,7 @@ def CreateGFpn(p, n = None, mod_poly = None):
         if len(conway) == 0:
             ReadConwayFromFile()
         if len(conway[p][n]) == 0:
-            raise ValueError(f'No Conway for the given p ({p}) and n ({n}). Please create a polinomial of your own or choose other values')
+            raise ValueError(f'No Conway for the given p ({p}) and n ({n}). Please create a polynomial of your own or choose other values')
         mod_poly = conway[p][n]
 
     return gf.GFpn(p, mod_poly)
