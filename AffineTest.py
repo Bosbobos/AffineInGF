@@ -84,6 +84,7 @@ all the symphonies of blazing and burning to bring down the tatters and charcoal
 ("i love cryptography <3", [15, 1, 0, 7, 8], [4, 6, 7, 0, 1], 11, 5),
 ("i love cryptography <3", [15, 1, 0, 7, 8], [4, 6, 7, 0, 1], 7, 10),
 ("i love cryptography <3", [15, 1, 0, 7, 8], [4, 6, 7, 0, 1], 7, 10),
+("i love cryptography <3", [15, 1, 0, 7, 8], [4, 6, 7, 0, 1], 23, 10),
     ]
 )
 def test_affine_encode_decode(message, keyA_coeffs, keyB_coeffs, p, n):
