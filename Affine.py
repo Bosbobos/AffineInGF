@@ -40,7 +40,7 @@ def AffineEncode(field: gf.GFpn, message: str,
 def AffineDecode(field: gf.GFpn, message: str,
                  keyA: gf.ElementInGFpn, keyB: gf.ElementInGFpn) -> str:
     p = field.p
-    n = field.mod_poly.order * len(str(field.p))
+    n = field.mod_poly.order
     block_len = len(str(p)) * n
     # print(pMsg)
     blockNum = int(ceil(len(message) / block_len))
@@ -54,7 +54,7 @@ def AffineDecode(field: gf.GFpn, message: str,
             block = message[i * block_len: (i + 1) * block_len]
         blockInGfpn = Converter.BasePIntoElementInGFPn(block, field)
         decodedBlock = AffineEncodeBlock(blockInGfpn, keyA, keyB, True)
-        decodedBaseP = Converter.ElementInGFPnIntoBaseP(decodedBlock).rjust(n, '0')
+        decodedBaseP = Converter.ElementInGFPnIntoBaseP(decodedBlock)
         # print(block, blockInGfpn, '|', encodedBlock, encodedBaseP)
         pRes += decodedBaseP
 

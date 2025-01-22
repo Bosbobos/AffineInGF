@@ -26,34 +26,43 @@ def BasePIntoElementInGFPn(baseP: str, GFpn: gf.GFpn) -> gf.ElementInGFpn:
 
     return gf.ElementInGFpn(coeffs, p, GFpn.mod_poly)
 
-def ElementInGFPnIntoBaseP(elem: gf.ElementInGFpn) -> str:
+def ElementInGFPnIntoBaseP0(elem: gf.ElementInGFpn) -> str:
     res = ''
     for x in elem.coeffs:
         res += str(x).rjust(len(str(elem.p)), '0')
 
     return res
 
+
+
+def ElementInGFPnIntoBaseP(elem: gf.ElementInGFpn) -> str:
+    block_len = ceil(log(ord('Я'), elem.p)) * len(str(elem.p))
+    res = ''
+    for x in elem.coeffs:
+        res += str(x).rjust(len(str(elem.p)), '0')
+
+    return res.rjust(block_len, '0')
+
 def StringIntoBaseP(text: str, field: gf.GFpn) -> str:
     res = ''
     p = field.p
-    block_len = len(str(p)) * field.mod_poly.order
+    block_len = ceil(log(ord('Я'), p)) * len(str(p))
 
     for symbol in text:
         sym_res = ''
         x = ord(symbol)
         while x:
-            sym_res += str(x % p).rjust(len(str(p)), '0')
+            sym_res += str(x % p).ljust(len(str(p)), '0')
             x //= p
 
-        sym_res = sym_res[::-1]
-        res += sym_res.rjust(block_len, '0')
+        res += sym_res[::-1].rjust(block_len, '0')
 
     return res
 
 def BasePIntoString(encoded_text: str, field: gf.GFpn) -> str:
     res = ''
     p = field.p
-    block_len = len(str(p)) * field.mod_poly.order
+    block_len = ceil(log(ord('Я'), p)) * len(str(p))
     for i in range(0, len(encoded_text), block_len):
         sym_res = 0
         block = encoded_text[i:i + block_len].rjust(block_len, '0')
