@@ -63,9 +63,14 @@ def test_affine_encode_block(block_coeffs, keyA_coeffs, keyB_coeffs, p, n):
     assert block.coeffs == decodedResult.coeffs
 
 @pytest.mark.parametrize(
-    "message, keyA_coeffs, keyB_coeffs, p, n",
+    "message, keyA_coeffs, keyB_coeffs, p, n",#109987, 4
     [
-("i love cryptography <3", [15, 1, 0, 7, 8], [4, 6, 7, 0, 1], 11, 2),
+        ("i love cryptography <3", [5, 17, 28, 60, 56], [7, 7, 7, 7, 7, 7], 61, 139),
+        ("i love cryptography <3", [5, 17, 28, 60, 56], [7, 7, 7, 7, 7, 7], 647, 9),
+        ("i love cryptography <3", [15, 1, 0, 7, 8], [4, 6, 7, 0, 1], 11, 2),
+("i love cryptography <3", [1], [1], 11, 2),
+("i love cryptography <3", [1], [1], 29, 10),
+("i love cryptography <3", [1], [1], 37, 14),
         ("Какой-то текст на русском. Не ожидал такого, да?", [2, 1, 3, 5, 6], [2,2,2,6,5], 7, 5),
         ("test message", [1, 0], [0, 1], 5, 3),  # Простое поле GF(5^3)
         ("hello world", [1, 2], [2, 3], 7, 11),      # Поле GF(7^3)

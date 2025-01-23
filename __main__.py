@@ -15,7 +15,15 @@ affineMsg = '''Please choose the operation:
 3: Decode message
 '''
 
-def GetGFpn() -> gf.ElementInGFpn:
+galoisMsg = '''Please choose the operation:
+0: Set the field
+1: Add polynomials
+2: Multiply polynomials
+3: Find a primitive element
+4: Decompose group element
+'''
+
+def GetGFpn() -> gf.GFpn:
     p, n = map(int, input('Enter the p and n: ').split())
 
     return Fields.CreateGFpn(p, n)
@@ -57,10 +65,49 @@ def AffineMode():
             decodedMessage = aff.AffineDecode(GFpn, message, keyA, keyB)
             print(decodedMessage)
 
-if __name__ == '__main__':
+def GaloisMode():
+    field = GetGFpn()
+    primitive = field.random_primitive_elm()
+    print(f'Field: {field}')
+    while True:
+        op = int(input(galoisMsg))
 
+        if op == 0:
+            field = GetGFpn()
+            print(f'Field: {field}')
+
+        elif op == 1:
+            poly1 = list(map(int, input("Enter first polynomial (coefficients): ").split()))
+            poly2 = list(map(int, input("Enter second polynomial (coefficients): ").split()))
+
+            print(f"Sum: {field.elm(poly1) + field.elm(poly2)}")
+
+        elif op == 2:
+            poly1 = list(map(int, input("Enter first polynomial (coefficients): ").split()))
+            poly2 = list(map(int, input("Enter second polynomial (coefficients): ").split()))
+
+            print(f"Product: {field.elm(poly1) * field.elm(poly2)}")
+
+        elif op == 3:
+            print(f"Primitive element: {primitive}")
+
+        elif op == 4:
+            element = field.elm(list(map(int, input("Enter polynomial (coefficients): ").split())))
+            i = 1
+            prim = primitive
+            while prim != element:
+                prim *= primitive
+                i += 1
+            print(f"{element} = ({primitive}) ** {i}")
+
+        elif op == -1:
+            break
+
+if __name__ == '__main__':
     func = int(input(msg))
     if func == 0:
         exit()
     if func == 1:
         AffineMode()
+    if func == 2:
+        GaloisMode()

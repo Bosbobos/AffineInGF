@@ -44,22 +44,7 @@ def check_p_and_ns(p, n_values):
                     keyB = field.elm(keyB_coeffs)
 
                     # Тестовое сообщение
-                    message = '''IT WAS A PLEASURE TO BURN
-IT was a special pleasure to see things eaten, to see things blackened and changed. With the
-brass nozzle in his fists, with this great python spitting its venomous kerosene upon the world,
-the blood pounded in his head, and his hands were the hands of some amazing conductor playing
-all the symphonies of blazing and burning to bring down the tatters and charcoal ruins of history.
-With his symbolic helmet numbered 451 on his stolid head, and his eyes all orange flame with
-the thought of what came next, he flicked the igniter and the house jumped up in a gorging fire
-that burned the evening sky red and yellow and black. He strode in a swarm of fireflies. He
-wanted above all, like the old joke, to shove a marshmallow on a stick in the furnace, while the
-flapping pigeon-winged books died on the porch and lawn of the house. While the books went up
-in sparkling whirls and blew away on a wind turned dark with burning.
-Montag grinned the fierce grin of all men singed and driven back by flame.
-He knew that when he returned to the firehouse, he might wink at himself, a minstrel man, burnt-
-corked, in the mirror. Later, going to sleep, he would feel the fiery smile still gripped by his face
-muscles, in the dark. It never went away, that. smile, it never ever went away, as long as he
-remembered.'''
+                    message = '''It took me almost a month to create this, but I'm so glad it finally works'''
 
                     # Кодирование и декодирование
                     encoded_message = AffineEncode(field, message, keyA, keyB)
