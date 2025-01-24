@@ -87,3 +87,13 @@ def HexIntoElementInGFPn(hexa: str, field: gf.GFpn) -> gf.ElementInGFpn:
     digit_len = ceil(log(max_field_val, 16))
     for i in range(0, len(hexa), digit_len):
         block = int(hexa[i : i + digit_len])
+
+def GetMessageWithEncodedLen(message: str) -> str:
+    i = 0
+    l = ''
+    while message[i] != '|':
+        l += message[i]
+        i += 1
+    msg = message[i + 1 : i + int(l) + 1]
+
+    return msg

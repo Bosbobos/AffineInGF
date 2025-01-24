@@ -3,6 +3,9 @@ import Converter
 import TextManager as tm
 from math import log, ceil
 
+from Converter import GetMessageWithEncodedLen
+
+
 def AffineEncodeBlock(block: gf.ElementInGFpn,
                       keyA: gf.ElementInGFpn, keyB: gf.ElementInGFpn,
                       decode: bool) -> gf.ElementInGFpn:
@@ -17,6 +20,7 @@ def AffineEncode(field: gf.GFpn, message: str,
     #print(decode)
     p = field.p
     n = field.mod_poly.order
+    message = str(len(message)) + '|' + message
     pMsg = Converter.StringIntoBaseP(message, field)
     block_len = len(str(p)) * n
     #print(pMsg)
@@ -59,5 +63,6 @@ def AffineDecode(field: gf.GFpn, message: str,
         pRes += decodedBaseP
 
     decoded = Converter.BasePIntoString(pRes, field)
+    msg = GetMessageWithEncodedLen(decoded)
     # print(pRes)
-    return decoded
+    return msg

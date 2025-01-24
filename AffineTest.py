@@ -65,6 +65,7 @@ def test_affine_encode_block(block_coeffs, keyA_coeffs, keyB_coeffs, p, n):
 @pytest.mark.parametrize(
     "message, keyA_coeffs, keyB_coeffs, p, n",#109987, 4
     [
+        ("i love cryptography <3", [5, 17, 28, 60, 56], [7, 7, 7, 7, 7, 7], 7, 4),
         ("i love cryptography <3", [5, 17, 28, 60, 56], [7, 7, 7, 7, 7, 7], 61, 139),
         ("i love cryptography <3", [5, 17, 28, 60, 56], [7, 7, 7, 7, 7, 7], 647, 9),
         ("i love cryptography <3", [15, 1, 0, 7, 8], [4, 6, 7, 0, 1], 11, 2),
@@ -105,7 +106,7 @@ def test_affine_encode_decode(message, keyA_coeffs, keyB_coeffs, p, n):
     decoded_message = AffineDecode(field, encoded_message, keyA, keyB)
 
     # Проверка
-    assert decoded_message[:len(message)] == message
+    assert decoded_message == message
 
 @pytest.mark.parametrize(
     "message",
